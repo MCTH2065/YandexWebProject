@@ -16,8 +16,10 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     age = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     email = sqlalchemy.Column(sqlalchemy.String, unique=True, nullable=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    rating = sqlalchemy.Column(sqlalchemy.Integer, default=20)
+    rating = sqlalchemy.Column(sqlalchemy.Integer, default=30)
     experience = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
+    money = sqlalchemy.Column(sqlalchemy.Integer, default=0)
+    mood = sqlalchemy.Column(sqlalchemy.Integer, default=70)
     bio = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     modified_date = sqlalchemy.Column(sqlalchemy.DateTime,
                                       default=datetime.datetime.now)
