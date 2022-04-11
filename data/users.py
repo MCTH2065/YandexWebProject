@@ -16,7 +16,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     age = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     email = sqlalchemy.Column(sqlalchemy.String, unique=True, nullable=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    rating = sqlalchemy.Column(sqlalchemy.Integer, default=30)
+    rating = sqlalchemy.Column(sqlalchemy.Integer, default=45)
     experience = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     money = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     mood = sqlalchemy.Column(sqlalchemy.Integer, default=70)
@@ -25,10 +25,11 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
                                       default=datetime.datetime.now)
 
     def __repr__(self):
-        return f'{self.surname} {self.name}'
+        return f'{self.email} {self.hashed_password}'
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)
 
     def check_password(self, password):
-        return check_password_hash(self.hashed_password, password)
+        # return check_password_hash(self.hashed_password, password)
+        return str(password) == str(self.hashed_password)
