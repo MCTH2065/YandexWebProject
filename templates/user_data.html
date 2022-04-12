@@ -1,7 +1,33 @@
 {% extends "base.html" %}
 {% block content %}
 <br>
-<div class="alert alert-danger" role="alert">
-    <h1>Работаем над этим!</h1>
+<div class="alert alert-info" role="alert">
+    <h1 align="center">Личный кабинет</h1>
+</div>
+<div class="personal" style="overflow: auto;">
+    <div class="image" style="margin-left: 30%;">
+        <img src="static/img/unknown.png" class="photo"> <br>
+        <button type="button" class="btn btn-dark" onclick="location.href='/user_change'"
+                style="width: 250px; height: 40px;">Изменить данные
+        </button>
+    </div>
+
+    <div class="data" style="margin-left: 5%; margin-right: 20%;">
+        {% if data %}
+        <p><b>Имя:</b> {{data[0]}}</p>
+        <p><b>Фамилия:</b> {{data[1]}}</p>
+        <p><b>Возраст:</b> {{data[2]}}</p>
+        <p><b>Почта:</b> {{data[3]}}</p>
+        <p><b>Ваш рейтинг:</b> {{data[4]}}</p>
+        {% if data[5] == 'True': %}
+        <p><b>Опыт работы:</b> есть</p>
+        {% else %}
+        <p><b>Опыт работы:</b> нет</p>
+        {% endif %}
+        <p><b>Деньги:</b> {{data[6]}}</p>
+        <p><b>Коэфицент трудоспособности:</b> {{data[7]}}</p>
+        <p><b>О себе:</b> {{data[8]}}</p>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

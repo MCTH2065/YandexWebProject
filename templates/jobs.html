@@ -1,27 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
-<br><h1 align="center">Доступные вакансии</h1> <br><br>
+<br>
+<div class="alert alert-info" role="alert">
+    <h1 align="center">Доступные вакансии</h1>
+</div><br><br>
 {% if data %}
-    <div style="display: flex; flex-flow: row wrap; justify-content: space-between;">
-        {% for item in data%}
-        <div class="alert alert-secondary" role="alert" style="width: 40%; margin-left: 50px;
+<div style="display: flex; flex-flow: row wrap; justify-content: space-between;">
+    {% for item in data%}
+    <div class="alert alert-secondary" role="alert" style="width: 40%; margin-left: 50px;
          margin-right: 50px; margin-top: 20px; margin-bottom-20px;">
-            <h1>{{item[0]}}</h1>
-            <p>О нас: {{item[1]}}</p>
-            <p>Глава компании: {{item[2]}}</p>
-            <p>Сфера вакансии: {{item[4]}}</p>
-            <p>Глава офиса: {{item[3]}}</p>
-            <p>Пороговый рейтинг: <b>{{item[5]}}</b></p>
-            <p>Оптимальный коэфицент трудоспособности: <b>{{item[6]}}</b></p>
-            <h3>Зарплата: {{item[7]}} долларов США в час</h3>
-            <button type="button" class="btn btn-info" style="width: 200px; height: 75px;">Подать заявку</button>
-        </div>
-        {% endfor %}
+        <h1>{{item[0]}}</h1>
+        <p>О нас: {{item[1]}}</p>
+        <p>Глава компании: {{item[2]}}</p>
+        <p>Сфера вакансии: {{item[4]}}</p>
+        <p>Глава офиса: {{item[3]}}</p>
+        <p>Пороговый рейтинг: <b>{{item[5]}}</b></p>
+        <p>Оптимальный коэфицент трудоспособности: <b>{{item[6]}}</b></p>
+        <h3>Зарплата: {{item[7]}} долларов США в час</h3>
+        <button type="button" class="btn btn-info" style="width: 200px; height: 75px;">Подать заявку</button>
     </div>
+    {% endfor %}
+</div>
 {% else %}
-    <div class="alert alert-danger" role="alert">
-        <h1 align="center">К сожалению, на данный момент нет свободных рабочих мест.</h1>
-    </div>
+<div class="alert alert-danger" role="alert">
+    <h1 align="center">К сожалению, на данный момент нет свободных рабочих мест.</h1>
+</div>
 {% endif %}
 {% endblock %}

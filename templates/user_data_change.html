@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<br>
+<div class="alert alert-info" role="alert">
+    <h1 align="center">Личный кабинет</h1>
+</div>
+<div>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <div class="personal" style="overflow: auto;">
+            <div class="image" style="margin-left: 20%;">
+                <img src="static/img/unknown.png" class="photo"> <br>
+                <button type="button" class="btn btn-dark"
+                        style="width: 250px; height: 40px;">Выбрать фото
+                </button>
+                <br> <br>
+                {{ form.submit(type="submit", class="btn btn-success", style="width: 250px; height: 40px;") }}
+            </div>
+
+            <div class="data" style="margin-left: 5%; margin-right: 20%;">
+                {% if data %}
+                <p><b>Имя:</b> {{ form.name(class="form-control", type="text", value=data[0]) }}</p>
+                <p><b>Фамилия:</b> {{ form.surname(class="form-control", type="text", value=data[1]) }}</p>
+                <p><b>Возраст:</b> {{ form.age(class="form-control", type="number", value=data[2]) }}</p>
+                <p><b>Почта:</b> {{ form.email(class="form-control", type="email", value=data[3]) }}</p>
+                <p><b>Ваш рейтинг:</b> {{data[4]}}</p>
+                {% if data[5] == 'True': %}
+                <p><b>Опыт работы:</b> есть</p>
+                {% else %}
+                <p><b>Опыт работы:</b> нет</p>
+                {% endif %}
+                <p><b>Деньги:</b> {{data[6]}}</p>
+                <p><b>Коэфицент трудоспособности:</b> {{data[7]}}</p>
+                <p><b>О себе:</b> {{ form.bio(class="form-control", type="text", value=data[8]) }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+</div>
+{% if message %}
+<div class="alert alert-danger" role="alert" align="center">
+    <h3>{{ message }}</h3>
+</div>
+{% endif %}
+{% endblock %}

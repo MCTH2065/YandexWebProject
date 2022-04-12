@@ -1,7 +1,7 @@
 .ff {
 color: red;
 }
-img {
+.logo {
 position: absolute;
 right: 0;
 margin-top: -0.5%;
@@ -17,4 +17,15 @@ font-size: 25px;
 }
 .navbar-brand {
 font-size: 35px;
+}
+.photo {
+width: 250px;
+height: 250px;
+margin-bottom: 20px;
+margin-top: 5%;
+}
+.personal {
+display: flex;
+flex-wrap: nowrap;
+margin-top: 5%;
 }

@@ -3,9 +3,7 @@ from wtforms import EmailField, PasswordField, SubmitField, StringField, Integer
 from wtforms.validators import DataRequired
 
 
-
 class CreateAccount(FlaskForm):
-
     surname = StringField('Фамилия', validators=[DataRequired()])
     name = StringField('Имя', validators=[DataRequired()])
     age = IntegerField('Возраст', validators=[DataRequired()])
@@ -15,3 +13,4 @@ class CreateAccount(FlaskForm):
     bio = StringField('Напишите что-нибудь о себе', validators=[DataRequired()])
     experience = BooleanField('Наличие опыта работы')
     submit = SubmitField('Создать аккаунт')
+    back = SubmitField('Вернуться назад')
