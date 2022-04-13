@@ -6,10 +6,13 @@
 </div>
 <div class="personal" style="overflow: auto;">
     <div class="image" style="margin-left: 30%;">
-        <img src="static/img/unknown.png" class="photo"> <br>
+        <img src={{data[10]}} class="photo" style="border-radius: 50%"> <br>
         <button type="button" class="btn btn-dark" onclick="location.href='/user_change'"
                 style="width: 250px; height: 40px;">Изменить данные
         </button>
+        <br><br>
+        <button type="button" class="btn btn-danger" style="width: 250px; height: 40px;"
+                onclick="location.href='/login'">Выйти из аккаунта</button>
     </div>
 
     <div class="data" style="margin-left: 5%; margin-right: 20%;">

@@ -13,4 +13,3 @@ class CreateAccount(FlaskForm):
     bio = StringField('Напишите что-нибудь о себе', validators=[DataRequired()])
     experience = BooleanField('Наличие опыта работы')
     submit = SubmitField('Создать аккаунт')
-    back = SubmitField('Вернуться назад')

@@ -12,6 +12,8 @@ from flask import request
 from forms.user_change import ChangeData
 from forms.createaccount import CreateAccount
 from forms.loginform import LoginForm
+from forms.forgotpassword import ForgotPassword
+from forms.changepassword import ChangePassword
 import random
 from data.jobs import Jobs
 from flask import render_template
@@ -48,7 +50,7 @@ def login():
             res = make_response(redirect("/"))
             data = '-'.join([user.name, user.surname, str(user.age), user.email, str(user.rating),
                              str(user.experience), str(user.money), str(user.mood), user.bio,
-                             str(user.id)])
+                             str(user.id), str(user.pfp)])
             session["user"] = data
             return res
         res = make_response(render_template('login.html',
@@ -71,7 +73,7 @@ def create():
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         if form.password.data == form.check_password.data:
-            if db_sess.query(User).filter(User.email == form.email.data).all == []:
+            if db_sess.query(User).filter(User.email == form.email.data).all() == []:
                 user = User()
                 user.surname = form.surname.data
                 user.name = form.name.data
@@ -80,11 +82,11 @@ def create():
                 user.hashed_password = form.password.data
                 user.experience = form.experience.data
                 user.bio = form.bio.data
+                user.pfp = f'static/img/{str(random.randint(1, 6))}.png'
                 db_sess.add(user)
                 db_sess.commit()
-                res = make_response(redirect("/login"))
                 session.pop("user", None)
-                return res
+                return redirect('/login')
             else:
                 res = make_response(render_template('createaccount.html',
                                                     message="Почта занята",
@@ -177,14 +179,54 @@ def user_data_change():
                 db_sess.commit()
                 user = db_sess.query(User).filter(User.id == us.split('-')[9]).one()
                 data = '-'.join([user.name, user.surname, str(user.age), user.email, str(user.rating),
-                                 str(user.experience), str(user.money), str(user.mood), str(user.bio),
-                                 str(user.id)])
+                                 str(user.experience), str(user.money), str(user.mood), user.bio,
+                                 str(user.id), str(user.pfp)])
                 session["user"] = data
                 return redirect('/user')
 
         return render_template('user_data_change.html', data=us.split('-'), form=form,
                                message='Почта уже занята')
     return render_template('user_data_change.html', data=us.split('-'), form=form)
+
+
+@app.route('/forgot', methods=['GET', 'POST'])
+def forgot():
+    form = ForgotPassword()
+    if form.is_submitted():
+        s = db_session.create_session()
+        u = s.query(User).filter(User.email == form.email.data,
+                                 User.name == form.name.data,
+                                 User.surname == form.surname.data,
+                                 User.codeword == form.codeword.data).all()
+        if len(u) == 1:
+            session["change_password"] = u[0].id
+            return redirect('/change_password')
+        return render_template('forgotpassword.html', form=form,
+                               message='Неверные данные!')
+    return render_template('forgotpassword.html', form=form)
+
+@app.route('/change_password', methods=['GET', 'POST'])
+def change_password():
+    u = session.get("change_password", 0)
+    if u == 0:
+        return redirect("/login")
+    form = ChangePassword()
+    if form.is_submitted():
+        if form.password.data == form.check_password.data:
+            s = db_session.create_session()
+            user = s.query(User).filter(User.id == u).one()
+            if form.password.data == user.hashed_password:
+                return render_template('changepassword.html', form=form,
+                                       message='Нельзя использовать'
+                                               ' предыдущий пароль!')
+            user.hashed_password = str(form.password.data)
+            s.commit()
+            return redirect("/")
+        return render_template('changepassword.html', form=form,
+                               message='Пароли не совпадают!')
+    return render_template('changepassword.html', form=form)
+
+
 
 
 def main():

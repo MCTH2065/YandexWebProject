@@ -8,12 +8,8 @@
     <form action="" method="post">
         {{ form.hidden_tag() }}
         <div class="personal" style="overflow: auto;">
-            <div class="image" style="margin-left: 20%;">
-                <img src="static/img/unknown.png" class="photo"> <br>
-                <button type="button" class="btn btn-dark"
-                        style="width: 250px; height: 40px;">Выбрать фото
-                </button>
-                <br> <br>
+            <div class="image" style="margin-left: 30%;">
+        <img src={{data[10]}} class="photo" style="border-radius: 50%"> <br>
                 {{ form.submit(type="submit", class="btn btn-success", style="width: 250px; height: 40px;") }}
             </div>
 

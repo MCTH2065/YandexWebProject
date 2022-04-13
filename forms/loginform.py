@@ -7,4 +7,3 @@ class LoginForm(FlaskForm):
     email = EmailField('Почта', validators=[DataRequired()])
     password = PasswordField('Пароль', validators=[DataRequired()])
     submit = SubmitField('Войти')
-    create_acc = SubmitField('Создать аккаунт')
