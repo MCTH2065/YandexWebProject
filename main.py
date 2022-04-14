@@ -4,6 +4,7 @@ import flask_login
 from flask_login import LoginManager
 from flask import Flask
 from data import db_session, blueprint
+from data.serverdata import ServerData
 from data.users import User
 from flask_login import login_user, logout_user, login_required
 # from forms.loginform import LoginForm
@@ -14,6 +15,7 @@ from forms.createaccount import CreateAccount
 from forms.loginform import LoginForm
 from forms.forgotpassword import ForgotPassword
 from forms.changepassword import ChangePassword
+from forms.jobs import JobForm
 import random
 from data.jobs import Jobs
 from flask import render_template
@@ -48,9 +50,14 @@ def login():
         if user and user.check_password(form.password.data):
             login_user(user)
             res = make_response(redirect("/"))
-            data = '-'.join([user.name, user.surname, str(user.age), user.email, str(user.rating),
-                             str(user.experience), str(user.money), str(user.mood), user.bio,
-                             str(user.id), str(user.pfp)])
+            if user.comp:
+                company = db_sess.query(Jobs).filter(Jobs.id == int(user.comp)).one().name
+            else:
+                company = ''
+            data = 'UgandaWillNeverBeChosenAsABioOfSomeoneRight?'.join(
+                [user.name, user.surname, str(user.age), user.email, str(user.rating),
+                 str(user.experience), str(user.money), str(user.mood), user.bio,
+                 str(user.id), str(user.pfp), company])
             session["user"] = data
             return res
         res = make_response(render_template('login.html',
@@ -82,6 +89,7 @@ def create():
                 user.hashed_password = form.password.data
                 user.experience = form.experience.data
                 user.bio = form.bio.data
+                user.codeword = form.codeword.data
                 user.pfp = f'static/img/{str(random.randint(1, 6))}.png'
                 db_sess.add(user)
                 db_sess.commit()
@@ -109,30 +117,103 @@ def index():
     if us == 0:
         return redirect("/login")
     else:
-        user = db_sess.query(User).filter(User.email == us.split('-')[3]).first()
+        user = db_sess.query(User).filter(
+            User.email == us.split('UgandaWillNeverBeChosenAsABioOfSomeoneRight?')[3]).first()
         return render_template('main.html', data=' '.join([user.name, user.surname]))
 
 
 @login_required
-@app.route('/jobs')
+@app.route('/jobs', methods=['GET', 'POST'])
 def jobs():
     us = session.get("user", 0)
     if us == 0:
         return redirect("/login")
+    message = session.get("message_for_job", "")
     db_s = db_session.create_session()
-    j = db_s.query(Jobs).all()
-    data = []
-    for elem in j:
-        ch = random.randint(1, 10)
-        if ch / 10 <= elem.chance_of_a_job:
-            stats = random.choice(elem.field_rating_mood_salary.split(', ')).split('-')
-            d = [elem.name, elem.about, elem.boss,
-                 random.choice(elem.lower_rank_bosses.split(', ')),
-                 stats[0], stats[1], stats[2], stats[3]
-                 ]
-            data.append(d)
+    current = db_s.query(ServerData).one()
+    dif = (datetime.datetime.now() - current.modified_date).seconds
+    if dif >= 5:
+        j = db_s.query(Jobs).all()
+        data = []
+        for_db = []
+        for elem in j:
+            ch = random.randint(1, 10)
+            if ch / 10 <= elem.chance_of_a_job:
+                stats = random.choice(elem.field_rating_mood_salary.split(', ')).split('-')
+                b = random.choice(elem.lower_rank_bosses.split(', '))
+                d = [elem.name, elem.about, elem.boss,
+                     b, stats[0], stats[1], stats[2], stats[3], elem.is_experience_required
+                     ]
+                for_db.append(
+                    f'{str(elem.id)}-{stats[0]}-{stats[1]}-{stats[2]}-{stats[3]}-{b}')
+                data.append(d)
+        current.current_jobs = (';'.join(for_db))
+        current.modified_date = datetime.datetime.now()
+        db_s.commit()
+        session.pop("message_for_job", None)
+        return render_template('jobs.html', data=data, message=message)
+    else:
+        data = []
+        if current.current_jobs:
+            for elem in current.current_jobs.split(';'):
+                j = db_s.query(Jobs).filter(Jobs.id == int(elem.split('-')[0])).one()
+                stats = elem.split('-')[1:6]
+                d = [j.name, j.about, j.boss, (stats[4]),
+                     stats[0], stats[1], stats[2], stats[3], j.is_experience_required
+                     ]
+                data.append(d)
+        session.pop("message_for_job", None)
+        return render_template('jobs.html', data=data, message=message)
 
-    return render_template('jobs.html', data=data)
+
+@app.route('/test', methods=['GET', 'POST'])
+def test():
+    db_s = db_session.create_session()
+    current = db_s.query(ServerData).one()
+    dif = (datetime.datetime.now() - current.modified_date).seconds
+    d = request.form.get('data')
+    d = d.split('"')
+    company_name = d[-2]
+    c = db_s.query(Jobs).filter(Jobs.name == company_name).one()
+    user = session.get("user").split('UgandaWillNeverBeChosenAsABioOfSomeoneRight?')
+    if user[11]:
+        session["message_for_job"] = 'already'
+    else:
+        if dif <= 5:
+            r = user[4]
+            exp = user[5]
+            mood = user[7]
+        else:
+            r = -1000000
+            exp = False
+            mood = -1000000
+            session["message_for_job"] = '0'
+        stats = c.field_rating_mood_salary.split('-')
+        if int(r) >= 0:
+            if int(r) >= int(stats[1]):
+                if int(mood) >= int(stats[2]):
+                    if (str(c.is_experience_required) == 'True' and str(exp) == 'True') \
+                            or (str(c.is_experience_required) == 'False'):
+                        userid = int(user[9])
+                        u = db_s.query(User).filter(User.id == userid).one()
+                        u.comp = c.id
+                        db_s.commit()
+                        u = db_s.query(User).filter(User.id == userid).one()
+                        company = db_s.query(Jobs).filter(Jobs.id == int(u.comp)).one().name
+                        data = 'UgandaWillNeverBeChosenAsABioOfSomeoneRight?'.join(
+                            [u.name, u.surname, str(u.age), u.email, str(u.rating),
+                             str(u.experience), str(u.money), str(u.mood), u.bio,
+                             str(u.id), str(u.pfp), company])
+                        session["user"] = data
+                        session["message_for_job"] = '1'
+                    else:
+                        session["message_for_job"] = 'отсутсвие опыта'
+                else:
+                    session["message_for_job"] = 'низкий коэфицент трудоспособности'
+            else:
+                session["message_for_job"] = 'низкий рейтинг'
+
+    return redirect('/jobs')
 
 
 @app.route('/work')
@@ -156,7 +237,7 @@ def user_data():
     us = session.get("user", 0)
     if us == 0:
         return redirect("/login")
-    return render_template('user_data.html', data=us.split('-'))
+    return render_template('user_data.html', data=us.split('UgandaWillNeverBeChosenAsABioOfSomeoneRight?'))
 
 
 @app.route('/user_change', methods=['GET', 'POST'])
@@ -167,26 +248,35 @@ def user_data_change():
         return redirect("/login")
     if form.is_submitted():
         db_sess = db_session.create_session()
-        if db_sess.query(User).filter(User.id == us.split('-')[9]).all != []:
-            if us.split('-')[3] == form.email.data or \
+        if db_sess.query(User).filter(User.id == us.split('UgandaWillNeverBeChosenAsABioOfSomeoneRight?')[9]).all != []:
+            if us.split('UgandaWillNeverBeChosenAsABioOfSomeoneRight?')[3] == form.email.data or \
                     db_sess.query(User).filter(User.email == form.email.data).all() == []:
-                user = db_sess.query(User).filter(User.id == us.split('-')[9]).one()
+                user = db_sess.query(User).filter(
+                    User.id == us.split('UgandaWillNeverBeChosenAsABioOfSomeoneRight?')[9]).one()
                 user.name = form.name.data
                 user.surname = form.surname.data
                 user.age = form.age.data
                 user.email = form.email.data
                 user.bio = form.bio.data
                 db_sess.commit()
-                user = db_sess.query(User).filter(User.id == us.split('-')[9]).one()
-                data = '-'.join([user.name, user.surname, str(user.age), user.email, str(user.rating),
-                                 str(user.experience), str(user.money), str(user.mood), user.bio,
-                                 str(user.id), str(user.pfp)])
+                user = db_sess.query(User).filter(
+                    User.id == us.split('UgandaWillNeverBeChosenAsABioOfSomeoneRight?')[9]).one()
+                if user.comp:
+                    company = db_sess.query(Jobs).filter(Jobs.id == int(user.comp)).one().name
+                else:
+                    company = ''
+                data = 'UgandaWillNeverBeChosenAsABioOfSomeoneRight?'.join(
+                    [user.name, user.surname, str(user.age), user.email, str(user.rating),
+                     str(user.experience), str(user.money), str(user.mood), user.bio,
+                     str(user.id), str(user.pfp), company])
                 session["user"] = data
                 return redirect('/user')
 
-        return render_template('user_data_change.html', data=us.split('-'), form=form,
+        return render_template('user_data_change.html', data=us.split('UgandaWillNeverBeChosenAsABioOfSomeoneRight?'),
+                               form=form,
                                message='Почта уже занята')
-    return render_template('user_data_change.html', data=us.split('-'), form=form)
+    return render_template('user_data_change.html', data=us.split('UgandaWillNeverBeChosenAsABioOfSomeoneRight?'),
+                           form=form)
 
 
 @app.route('/forgot', methods=['GET', 'POST'])
@@ -204,6 +294,7 @@ def forgot():
         return render_template('forgotpassword.html', form=form,
                                message='Неверные данные!')
     return render_template('forgotpassword.html', form=form)
+
 
 @app.route('/change_password', methods=['GET', 'POST'])
 def change_password():
@@ -227,19 +318,11 @@ def change_password():
     return render_template('changepassword.html', form=form)
 
 
-
-
 def main():
     db_session.global_init("db/top_secret.db")
     # s = db_session.create_session()
-    # j = Jobs()
-    # j.name = 'dggd'
-    # j.about = 'gf'
-    # j.boss = 'df'
-    # j.lower_rank_bosses = 'gf'
-    # j.field_rating_mood_salary = 'IT-79-63-35'
-    # s.add(j)
     # s.commit()
+
     app.run()
 
 

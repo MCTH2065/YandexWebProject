@@ -75,6 +75,15 @@
         {% endfor %}
         </p>
         <p>
+            {{ form.codeword.label }}<br>
+            {{ form.codeword(class="form-control", type="password") }}<br>
+            {% for error in form.codeword.errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+        {% endfor %}
+        </p>
+        <p>
             {{ form.bio.label }}<br>
             {{ form.bio(class="form-control", type="string") }}<br>
             {% for error in form.bio.errors %}
@@ -86,7 +95,9 @@
         <p>{{ form.experience() }} {{ form.experience.label }}</p>
         <p>{{ form.submit(type="submit", class="btn btn-primary") }}
             <button type="button" class="btn btn-secondary" onclick="location.href='/login'">
-                Вернуться назад</button></p>
+                Вернуться назад
+            </button>
+        </p>
 
     </form>
 </div>

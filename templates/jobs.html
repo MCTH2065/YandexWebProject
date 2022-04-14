@@ -1,24 +1,78 @@
-{% extends "base.html" %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="15;url=/jobs">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="static/css/style.css">
+    <title>WORK AT HOME WEB SERVICE</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-xl navbar-light bg-light">
+    <a class="navbar-brand" href="/">На Главную</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+            <a class="nav-item nav-link" style="padding-right: 30px; padding-left: 30px;" href="/jobs">Вакансии</a>
+            <a class="nav-item nav-link" style="padding-right: 30px; padding-left: 30px;" href="/work">Работать</a>
+            <a class="nav-item nav-link" style="padding-right: 30px; padding-left: 30px;" href="/company">Ваша
+                компания</a>
+            <a class="nav-item nav-link" style="padding-right: 30px; padding-left: 30px;" href="/user">Личный
+                кабинет</a>
+            <a class="navbar-brand">
+                <img src="static/img/logo.png" height="60" class="logo">
+            </a>
 
-{% block content %}
+        </div>
+    </div>
+</nav>
 <br>
 <div class="alert alert-info" role="alert">
-    <h1 align="center">Доступные вакансии</h1>
-</div><br><br>
+    <h1 align="center">Доступные вакансии</h1></div>
+{% if message == '1'%}
+<div class="alert alert-success" role="alert">
+    <h2 align="center">Поздравляем, вы приняты!</h2></div>
+{% elif message == '0' %}
+<div class="alert alert-warning" role="alert">
+    <h2 align="center">Устаревшая информация!</h2></div>
+{% elif message == 'already' %}
+<div class="alert alert-warning" role="alert">
+    <h2 align="center">У вас уже есть работа!</h2></div>
+{% elif message %}
+<div class="alert alert-danger" role="alert">
+    <h2 align="center">К сожалению, вам было отказано. Причина: <b>{{message}}</b></h2></div>
+{% else %}
+<br><br>
+{% endif %}
 {% if data %}
 <div style="display: flex; flex-flow: row wrap; justify-content: space-between;">
     {% for item in data%}
     <div class="alert alert-secondary" role="alert" style="width: 40%; margin-left: 50px;
-         margin-right: 50px; margin-top: 20px; margin-bottom-20px;">
-        <h1>{{item[0]}}</h1>
-        <p>О нас: {{item[1]}}</p>
-        <p>Глава компании: {{item[2]}}</p>
-        <p>Сфера вакансии: {{item[4]}}</p>
-        <p>Глава офиса: {{item[3]}}</p>
-        <p>Пороговый рейтинг: <b>{{item[5]}}</b></p>
-        <p>Оптимальный коэфицент трудоспособности: <b>{{item[6]}}</b></p>
-        <h3>Зарплата: {{item[7]}} долларов США в час</h3>
-        <button type="button" class="btn btn-info" style="width: 200px; height: 75px;">Подать заявку</button>
+                 margin-right: 50px; margin-top: 20px; margin-bottom-20px;">
+        <form action="/test" method="post">
+            <h1>{{item[0]}}</h1>
+            <p>О нас: {{item[1]}}</p>
+            <p>Глава компании: {{item[2]}}</p>
+            <p>Сфера вакансии: {{item[4]}}</p>
+            <p>Глава офиса: {{item[3]}}</p>
+            <p>Пороговый рейтинг: <b>{{item[5]}}</b></p>
+            <p>Оптимальный коэфицент трудоспособности: <b>{{item[6]}}</b></p>
+            {% if item[8] %}
+            <p>Опыт работы <b>обязателен</b></p>
+            {% else %}
+            <p>Опыт работы <b>необязателен</b></p>
+            {% endif %}
+            <h3>Зарплата: {{item[7]}} долларов США в час</h3>
+            <input align="center" type="submit" class="btn btn-info" name="data" value='Подать заявку в "{{item[0]}}"'
+                   style="width: 350px; height: 75px;"/>
+        </form>
     </div>
     {% endfor %}
 </div>
@@ -27,4 +81,5 @@
     <h1 align="center">К сожалению, на данный момент нет свободных рабочих мест.</h1>
 </div>
 {% endif %}
-{% endblock %}
+</body>
+</html>

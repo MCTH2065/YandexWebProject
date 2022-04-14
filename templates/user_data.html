@@ -12,7 +12,8 @@
         </button>
         <br><br>
         <button type="button" class="btn btn-danger" style="width: 250px; height: 40px;"
-                onclick="location.href='/login'">Выйти из аккаунта</button>
+                onclick="location.href='/login'">Выйти из аккаунта
+        </button>
     </div>
 
     <div class="data" style="margin-left: 5%; margin-right: 20%;">
@@ -30,6 +31,11 @@
         <p><b>Деньги:</b> {{data[6]}}</p>
         <p><b>Коэфицент трудоспособности:</b> {{data[7]}}</p>
         <p><b>О себе:</b> {{data[8]}}</p>
+        {% if data[11] %}
+        <p><b>Компания:</b> {{data[11]}}</p>
+        {% else %}
+        <p><b>Компания:</b> отсутствует</p>
+        {% endif %}
         {% endif %}
     </div>
 </div>

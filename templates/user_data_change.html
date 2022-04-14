@@ -9,7 +9,7 @@
         {{ form.hidden_tag() }}
         <div class="personal" style="overflow: auto;">
             <div class="image" style="margin-left: 30%;">
-        <img src={{data[10]}} class="photo" style="border-radius: 50%"> <br>
+                <img src={{data[10]}} class="photo" style="border-radius: 50%"> <br>
                 {{ form.submit(type="submit", class="btn btn-success", style="width: 250px; height: 40px;") }}
             </div>
 
@@ -19,14 +19,6 @@
                 <p><b>Фамилия:</b> {{ form.surname(class="form-control", type="text", value=data[1]) }}</p>
                 <p><b>Возраст:</b> {{ form.age(class="form-control", type="number", value=data[2]) }}</p>
                 <p><b>Почта:</b> {{ form.email(class="form-control", type="email", value=data[3]) }}</p>
-                <p><b>Ваш рейтинг:</b> {{data[4]}}</p>
-                {% if data[5] == 'True': %}
-                <p><b>Опыт работы:</b> есть</p>
-                {% else %}
-                <p><b>Опыт работы:</b> нет</p>
-                {% endif %}
-                <p><b>Деньги:</b> {{data[6]}}</p>
-                <p><b>Коэфицент трудоспособности:</b> {{data[7]}}</p>
                 <p><b>О себе:</b> {{ form.bio(class="form-control", type="text", value=data[8]) }}</p>
                 {% endif %}
             </div>

@@ -3,8 +3,8 @@ import sqlalchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from .db_session import SqlAlchemyBase
+from sqlalchemy import orm
 from sqlalchemy_serializer import SerializerMixin
-
 
 
 class User(SqlAlchemyBase, UserMixin, SerializerMixin):
@@ -25,6 +25,8 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
                                       default=datetime.datetime.now)
     pfp = sqlalchemy.Column(sqlalchemy.String)
     codeword = sqlalchemy.Column(sqlalchemy.String)
+    comp = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("jobs.id"))
+    job = orm.relation('Jobs')
 
     def __repr__(self):
         return f'{self.email} {self.hashed_password}'

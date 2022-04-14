@@ -1,10 +1,6 @@
-import datetime
 import sqlalchemy
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin
 from .db_session import SqlAlchemyBase
 from sqlalchemy_serializer import SerializerMixin
-
 
 
 class Jobs(SqlAlchemyBase, SerializerMixin):
@@ -20,10 +16,3 @@ class Jobs(SqlAlchemyBase, SerializerMixin):
     makes_happier = sqlalchemy.Column(sqlalchemy.Integer, default=10)
     makes_sadder = sqlalchemy.Column(sqlalchemy.Integer, default=25)
     chance_of_a_job = sqlalchemy.Column(sqlalchemy.Float, default=0.2)
-
-
-    def set_password(self, password):
-        self.hashed_password = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.hashed_password, password)
