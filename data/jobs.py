@@ -16,3 +16,4 @@ class Jobs(SqlAlchemyBase, SerializerMixin):
     makes_happier = sqlalchemy.Column(sqlalchemy.Integer, default=10)
     makes_sadder = sqlalchemy.Column(sqlalchemy.Integer, default=25)
     chance_of_a_job = sqlalchemy.Column(sqlalchemy.Float, default=0.2)
+    more_about = sqlalchemy.Column(sqlalchemy.String)

@@ -10,12 +10,12 @@ from flask_login import login_user, logout_user, login_required
 # from forms.loginform import LoginForm
 # from forms.addjob import AddJob
 from flask import request
+from forms.confirm_password import ConfirmPassword
 from forms.user_change import ChangeData
 from forms.createaccount import CreateAccount
 from forms.loginform import LoginForm
 from forms.forgotpassword import ForgotPassword
 from forms.changepassword import ChangePassword
-from forms.jobs import JobForm
 import random
 from data.jobs import Jobs
 from flask import render_template
@@ -122,7 +122,6 @@ def index():
         return render_template('main.html', data=' '.join([user.name, user.surname]))
 
 
-@login_required
 @app.route('/jobs', methods=['GET', 'POST'])
 def jobs():
     us = session.get("user", 0)
@@ -166,7 +165,7 @@ def jobs():
         return render_template('jobs.html', data=data, message=message)
 
 
-@app.route('/test', methods=['GET', 'POST'])
+@app.route('/get_job', methods=['GET', 'POST'])
 def test():
     db_s = db_session.create_session()
     current = db_s.query(ServerData).one()
@@ -194,16 +193,31 @@ def test():
                 if int(mood) >= int(stats[2]):
                     if (str(c.is_experience_required) == 'True' and str(exp) == 'True') \
                             or (str(c.is_experience_required) == 'False'):
+                        field_head = current.current_jobs.split(';')
+                        head = None
+                        field = None
+                        for elem in field_head:
+                            if str(elem.split('-')[0]) == str(c.id):
+                                head = elem.split('-')[5]
+                                field = elem.split('-')[1]
                         userid = int(user[9])
                         u = db_s.query(User).filter(User.id == userid).one()
+                        company = db_s.query(Jobs).filter(Jobs.id == int(c.id)).one().makes_happier
+                        if u.mood + company <= 100:
+                            u.mood += company
+                        else:
+                            u.mood = 100
                         u.comp = c.id
+                        u.head = head
+                        u.field = field
                         db_s.commit()
                         u = db_s.query(User).filter(User.id == userid).one()
-                        company = db_s.query(Jobs).filter(Jobs.id == int(u.comp)).one().name
+                        company = db_s.query(Jobs).filter(Jobs.id == int(u.comp)).one()
+                        company_n = company.name
                         data = 'UgandaWillNeverBeChosenAsABioOfSomeoneRight?'.join(
                             [u.name, u.surname, str(u.age), u.email, str(u.rating),
                              str(u.experience), str(u.money), str(u.mood), u.bio,
-                             str(u.id), str(u.pfp), company])
+                             str(u.id), str(u.pfp), company_n])
                         session["user"] = data
                         session["message_for_job"] = '1'
                     else:
@@ -229,7 +243,57 @@ def company_info():
     us = session.get("user", 0)
     if us == 0:
         return redirect("/login")
-    return render_template('company.html')
+    db_s = db_session.create_session()
+    user = us.split('UgandaWillNeverBeChosenAsABioOfSomeoneRight?')
+    company_name = user[11]
+    if company_name:
+        company = db_s.query(Jobs).filter(Jobs.name == company_name).one()
+        j = []
+        for elem in company.field_rating_mood_salary.split(', '):
+            j.append(elem.split('-')[0])
+        j = ', '.join(j)
+        more_user = db_s.query(User).filter(User.id == int(user[9])).one()
+
+        company_data = [company.name, company.boss, company.lower_rank_bosses, j, company.more_about,
+                        more_user.head, more_user.field]
+        return render_template('company.html', data=company_data)
+    else:
+
+        return render_template('company.html')
+
+
+@app.route('/resign', methods=['GET', 'POST'])
+def resign():
+    us = session.get("user", 0)
+    if us == 0:
+        return redirect("/login")
+    form = ConfirmPassword()
+    if form.is_submitted():
+        if form.password.data == form.check_password.data:
+            s = db_session.create_session()
+            userid = us.split('UgandaWillNeverBeChosenAsABioOfSomeoneRight?')[9]
+
+            com = s.query(Jobs).filter(
+                Jobs.name == (us.split('UgandaWillNeverBeChosenAsABioOfSomeoneRight?')[11])).one().makes_sadder
+            usdata = s.query(User).filter(User.id == userid).one()
+            if usdata.mood - int(com) >= 0:
+                usdata.mood -= int(com)
+            else:
+                usdata.mood = 0
+            usdata.comp = None
+            usdata.head = None
+            usdata.field = None
+            s.commit()
+            u = s.query(User).filter(User.id == userid).one()
+            data = 'UgandaWillNeverBeChosenAsABioOfSomeoneRight?'.join(
+                [u.name, u.surname, str(u.age), u.email, str(u.rating),
+                 str(u.experience), str(u.money), str(u.mood), u.bio,
+                 str(u.id), str(u.pfp), ''])
+            session["user"] = data
+            return redirect("/")
+        return render_template('confirm_password.html', form=form,
+                               message='Пароли не совпадают!')
+    return render_template('confirm_password.html', form=form)
 
 
 @app.route('/user')

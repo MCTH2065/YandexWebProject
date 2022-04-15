@@ -1,7 +1,49 @@
 {% extends "base.html" %}
 {% block content %}
 <br>
-<div class="alert alert-danger" role="alert">
-    <h1>Работаем над этим!</h1>
+{% if data %}
+<div class="alert alert-info" role="alert">
+    <h1 align="center">Добро пожаловать на страницу {{data[0]}}!</h1>
 </div>
+<div style="margin-right: 5%; margin-left: 5%;">
+    <div class="alert alert-dark" role="alert">
+        <div style="font-size: 35px;"><b>Информация о нас:</b></div>
+    </div>
+    <p style="font-size: 25px;">{{data[4]}}</p>
+</div>
+<br>
+<div style="margin-right: 5%; margin-left: 5%;">
+    <div class="alert alert-dark" role="alert">
+        <div style="font-size: 35px;"><b>Нынешний руководитель:</b> {{data[1]}}</div>
+    </div>
+</div>
+<br>
+<div style="margin-right: 5%; margin-left: 5%;">
+    <div class="alert alert-dark" role="alert">
+        <div style="font-size: 35px;"><b>Руководители отделов:</b> {{data[2]}}</div>
+    </div>
+</div>
+<br>
+<div style="margin-right: 5%; margin-left: 5%;">
+    <div class="alert alert-dark" role="alert">
+        <div style="font-size: 40px;"><b>Мы работаем в сферах</b> {{data[3]}}</div>
+    </div>
+</div>
+<br>
+<div style="margin-right: 5%; margin-left: 5%;">
+    <div class="alert alert-dark" role="alert">
+        <div style="font-size: 35px;"><b>Вы</b> работаете в сфере <b>{{data[6]}}</b>.
+            Ваш руководитель - <b>{{data[5]}}</b></div>
+    </div>
+</div>
+<br>
+<button type="button" class="btn btn-danger"
+        style="width: 20%; height: 70px; margin-left: 40%; margin-right: 40%; margin-bottom: 20px;"
+        onclick="location.href='/resign'">Уволиться
+</button>
+{% else %}
+<div class="alert alert-warning" role="alert">
+    <h1 align="center">Вы ещё не работаете в какой-либо компании!</h1>
+</div>
+{% endif %}
 {% endblock %}
