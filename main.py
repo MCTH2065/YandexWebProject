@@ -336,6 +336,7 @@ def check_work():
         print('4 - OK')
     else:
         print('4 - NOT OK')
+    u.work = None
     user.work_is_done = True
     db_sess.commit()
     return redirect('/work')
