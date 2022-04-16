@@ -1,7 +1,46 @@
 {% extends "base.html" %}
 {% block content %}
 <br>
-<div class="alert alert-danger" role="alert">
-    <h1>Работаем над этим!</h1>
+<div class="alert alert-info" role="alert">
+    <h1 align="center">Работа</h1>
 </div>
+{% if not done %}
+    <form action="/check_work" method="post">
+
+        <div class="alert alert-secondary" role="alert">
+            <h3 align="center">Первое задание</h3>
+            <p><h4>{{first}}</h4>
+            <input name="first" type="text" style="width: 20%;"/>
+            </p>
+        </div>
+
+        <div class="alert alert-secondary" role="alert">
+            <h3 align="center">Второе задание</h3>
+            <p><h4>{{second}}</h4>
+            <input name="second" type="text" style="width: 20%;"/>
+            </p>
+        </div>
+
+        <div class="alert alert-secondary" role="alert">
+            <h3 align="center">Третье задание</h3>
+            <p><h4>{{third}}</h4>
+            <input name="third" type="text" style="width: 20%;"/>
+            </p>
+        </div>
+
+        <div class="alert alert-secondary" role="alert">
+            <h3 align="center">Четвёртое задание</h3>
+            <p><h4>{{fourth}}</h4>
+            <input name="fourth" type="text" style="width: 20%;"/>
+            </p>
+        </div>
+
+        <input type="submit" class="btn btn-primary" style="height: 75px; width: 20%; margin-left: 40%;
+         font-size: 20px;" value="Подтвердить задания">
+{% else %}
+<div class="alert alert-success" role="alert">
+    <h1 align="center">Вы уже выполнили работу сегодня!</h1>
+</div>
+{% endif %}
+</form>
 {% endblock %}

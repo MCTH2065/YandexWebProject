@@ -235,7 +235,110 @@ def work():
     us = session.get("user", 0)
     if us == 0:
         return redirect("/login")
-    return render_template('workwork.html')
+
+    def number_to_base(n, b):
+        if n == 0:
+            return [0]
+        digits = []
+        while n:
+            digits.append(int(n % b))
+            n //= b
+        return digits[::-1]
+
+    db_s = db_session.create_session()
+    us_data = us.split('UgandaWillNeverBeChosenAsABioOfSomeoneRight?')
+    us_id = us_data[9]
+    u = db_s.query(User).filter(User.id == str(us_id)).one()
+    if u.work_is_done == False:
+        if not u.work:
+            field = u.field
+            if field == 'IT':
+                funcs = [['для вывода в консоль', 'print, print()'], ['для перевода данных в строку', 'str, str()'],
+                         ['для перевода данных в целое число', 'int, int()'],
+                         ['для перевода данных в число с плавающей запятой', 'float, float()'],
+                         ['для присваивания значений', '='], ['для перевода данных в список',
+                                                              'list, list(), []'],
+                         ['для перевода данных в множество', 'set, set()'],
+                         ['для перевода данных в словарь', 'dict, dict(), {}'],
+                         'для перевода данных в кортеж', 'tuple, tuple(), ()']
+                ran_first = random.randint(1, 10000)
+                first = f'Чему будет равно число {str(ran_first)} в двоичной системе счисления?'
+                ans_first = str(format(ran_first, 'b'))
+
+                ran_second = random.randint(1, 10000)
+                second = f'Чему будет равно число {str(ran_second)} в четвертичной системе счисления?'
+                ans_second = ''.join(str(number_to_base(ran_second, 4))[1:-1].split(', '))
+
+                ran_third = random.randint(1, 10000)
+                third = f'Чему будет равно число {str(ran_third)} в восьмеричной системе счисления?'
+                ans_third = ''.join(str(number_to_base(ran_third, 8))[1:-1].split(', '))
+
+                ran_fourth = random.choice(funcs)
+                fourth = f'Что служит в Python {ran_fourth[0]}?'
+                ans_fourth = ran_fourth[1].split(', ')
+                f = 'question-answer'.join([first, ans_first])
+                s = 'question-answer'.join([second, ans_second])
+                t = 'question-answer'.join([third, ans_third])
+                ft = 'question-answer'.join([fourth, str(ans_fourth)])
+                user_work = 'between-tasks'.join([f, s, t, ft])
+                u.work = user_work
+                db_s.commit()
+                session["answers"] = [ans_first, ans_second, ans_third, ans_fourth]
+        else:
+            tasks = u.work.split('between-tasks')
+            f = tasks[0]
+            s = tasks[1]
+            t = tasks[2]
+            ft = tasks[3]
+            first, ans_first = f.split('question-answer')[0], f.split('question-answer')[1]
+            second, ans_second = s.split('question-answer')[0], s.split('question-answer')[1]
+            third, ans_third = t.split('question-answer')[0], t.split('question-answer')[1]
+            fourth, ans_fourth = ft.split('question-answer')[0], ft.split('question-answer')[1]
+            session["answers"] = [ans_first, ans_second, ans_third, ans_fourth]
+
+        return render_template('workwork.html', first=first, second=second, third=third, fourth=fourth)
+    else:
+        return render_template('workwork.html', done=True)
+
+
+@app.route('/check_work', methods=['GET', 'POST'])
+def check_work():
+    form_data = request.form
+    answers = session.get("answers", 0)
+    us = session.get("user", 0)
+    if us == 0:
+        return redirect("/login")
+    us_data = us.split('UgandaWillNeverBeChosenAsABioOfSomeoneRight?')
+    us_id = us_data[9]
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == int(us_id)).one()
+    if answers == 0:
+        return redirect('/work')
+    u_first = form_data.get('first')
+    u_second = form_data.get('second')
+    u_third = form_data.get('third')
+    u_fourth = form_data.get('fourth')
+    ans_first, ans_second, ans_third, ans_fourth = answers
+    ans_fourth = ans_fourth.strip('[').strip(']').strip("'").split("', '")
+    if str(u_first) == ans_first:
+        print('1 - OK')
+    else:
+        print('1 - NOT OK')
+    if str(u_second) == ans_second:
+        print('2 - OK')
+    else:
+        print('2 - NOT OK')
+    if str(u_third) == ans_third:
+        print('3 - OK')
+    else:
+        print('3 - NOT OK')
+    if str(u_fourth) in ans_fourth:
+        print('4 - OK')
+    else:
+        print('4 - NOT OK')
+    user.work_is_done = True
+    db_sess.commit()
+    return redirect('/work')
 
 
 @app.route('/company')

@@ -28,6 +28,8 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     comp = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("jobs.id"), nullable=True)
     head = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     field = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    work = sqlalchemy.Column(sqlalchemy.String)
+    work_is_done = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
 
     job = orm.relation('Jobs')
 
