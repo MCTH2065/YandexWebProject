@@ -8,3 +8,4 @@ class ServerData(SqlAlchemyBase, SerializerMixin):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     current_jobs = sqlalchemy.Column(sqlalchemy.String)
     modified_date = sqlalchemy.Column(sqlalchemy.DateTime)
+    change_job = sqlalchemy.Column(sqlalchemy.DateTime)

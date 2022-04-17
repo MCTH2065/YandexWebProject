@@ -30,6 +30,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     field = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     work = sqlalchemy.Column(sqlalchemy.String)
     work_is_done = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
+    salary = sqlalchemy.Column(sqlalchemy.String)
 
     job = orm.relation('Jobs')
 
