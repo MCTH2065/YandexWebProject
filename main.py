@@ -1,14 +1,12 @@
 import datetime
 
-import flask_login
+
 from flask_login import LoginManager
 from flask import Flask
-from data import db_session, blueprint
+from data import db_session
 from data.serverdata import ServerData
 from data.users import User
-from flask_login import login_user, logout_user, login_required
-# from forms.loginform import LoginForm
-# from forms.addjob import AddJob
+from flask_login import login_user, logout_user
 from flask import request
 from forms.confirm_password import ConfirmPassword
 from forms.user_change import ChangeData
@@ -179,9 +177,11 @@ def update_job():
 
 def register_time():
     db_s = db_session.create_session()
-    server = db_s.query(ServerData).first()
-    if server.change_job:
-        last = server.change_job
+    user = session.get("user").split('UgandaWillNeverBeChosenAsABioOfSomeoneRight?')
+    id = int(user[9])
+    real_user = db_s.query(User).filter(User.id == id).one()
+    if real_user.work_time:
+        last = real_user.work_time
         now = datetime.datetime.today()
         if now - last >= datetime.timedelta(hours=24):
             update_job()
@@ -192,24 +192,26 @@ def register_time():
         elif now.year > last.year:
             update_job()
     else:
-        server.change_job = datetime.datetime.today()
+        real_user.work_time = datetime.datetime.today()
         db_s.commit()
 
 
 def update_vacs():
     db_s = db_session.create_session()
-    server = db_s.query(ServerData).first()
-    if server.modified_date:
-        last = server.modified_date
+    user = session.get("user").split('UgandaWillNeverBeChosenAsABioOfSomeoneRight?')
+    id = int(user[9])
+    real_user = db_s.query(User).filter(User.id == id).one()
+    if real_user.update_vacs:
+        last = real_user.update_vacs
         now = datetime.datetime.now()
         if now - last >= datetime.timedelta(hours=72):
-            server.modified_date = now
+            real_user.update_vacs = now
             db_s.commit()
             return True
         else:
             return False
     else:
-        server.modified_date = datetime.datetime.now()
+        real_user.update_vacs = datetime.datetime.now()
         db_s.commit()
 
 

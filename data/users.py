@@ -31,6 +31,9 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     work = sqlalchemy.Column(sqlalchemy.String)
     work_is_done = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     salary = sqlalchemy.Column(sqlalchemy.String)
+    work_time = sqlalchemy.Column(sqlalchemy.DateTime)
+    update_vacs = sqlalchemy.Column(sqlalchemy.DateTime)
+
 
     job = orm.relation('Jobs')
 
