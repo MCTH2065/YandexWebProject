@@ -183,13 +183,25 @@ def register_time():
     if real_user.work_time:
         last = real_user.work_time
         now = datetime.datetime.today()
-        if now - last >= datetime.timedelta(hours=24):
+        if now - last >= datetime.timedelta(seconds=86400):
+            real_user.work_time = now
+            real_user.work = None
+            db_s.commit()
             update_job()
         elif now.day > last.day:
+            real_user.work_time = now
+            real_user.work = None
+            db_s.commit()
             update_job()
         elif now.month > last.month:
+            real_user.work_time = now
+            real_user.work = None
+            db_s.commit()
             update_job()
         elif now.year > last.year:
+            real_user.work_time = now
+            real_user.work = None
+            db_s.commit()
             update_job()
     else:
         real_user.work_time = datetime.datetime.today()
