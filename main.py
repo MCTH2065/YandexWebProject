@@ -54,13 +54,13 @@ def update_job():
                                                               'list, list(), []'],
                          ['для перевода данных в множество', 'set, set()'],
                          ['для перевода данных в словарь', 'dict, dict(), {}'],
-                         'для перевода данных в кортеж', 'tuple, tuple(), ()']
+                         ['для перевода данных в кортеж', 'tuple, tuple(), ()']]
                 ran_first = random.randint(1, 10000)
                 first = f'Чему будет равно число {str(ran_first)} в двоичной системе счисления?'
                 ans_first = str(format(ran_first, 'b'))
 
                 ran_second = random.randint(1, 10000)
-                second = f'Чему будет равно число {str(ran_second)} в четвертичной системе счисления?'
+                second = f'Чему будет равно число {str(ran_second)} в четверичной системе счисления?'
                 ans_second = ''.join(str(number_to_base(ran_second, 4))[1:-1].split(', '))
 
                 ran_third = random.randint(1, 10000)
@@ -173,6 +173,14 @@ def update_job():
             third, ans_third = t.split('question-answer')[0], t.split('question-answer')[1]
             fourth, ans_fourth = ft.split('question-answer')[0], ft.split('question-answer')[1]
             session["answers"] = [ans_first, ans_second, ans_third, ans_fourth]
+            user = session.get("user").split('UgandaWillNeverBeChosenAsABioOfSomeoneRight?')
+            id = int(user[9])
+            real_user = db_s.query(User).filter(User.id == id).one()
+            if real_user.mood + 2 >= 100:
+                real_user.mood = 100
+            else:
+                real_user.mood += 2
+            db_s.commit()
 
 
 def register_time():
@@ -703,6 +711,12 @@ def check_work():
     else:
         user.rating += rate
     db_sess.commit()
+    u = db_sess.query(User).filter(User.id == int(us_id)).one()
+    data = 'UgandaWillNeverBeChosenAsABioOfSomeoneRight?'.join(
+        [u.name, u.surname, str(u.age), u.email, str(u.rating),
+         str(u.experience), str(u.money), str(u.mood), u.bio,
+         str(u.id), str(u.pfp), ''])
+    session["user"] = data
     return redirect('/work')
 
 
@@ -752,6 +766,10 @@ def resign():
             usdata.comp = None
             usdata.head = None
             usdata.field = None
+            usdata.comp = None
+            usdata.head = None
+            usdata.field = None
+            usdata.work_is_done = 0
             s.commit()
             u = s.query(User).filter(User.id == userid).one()
             data = 'UgandaWillNeverBeChosenAsABioOfSomeoneRight?'.join(
