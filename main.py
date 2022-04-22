@@ -872,9 +872,6 @@ def change_password():
 
 def main():
     db_session.global_init("db/top_secret.db")
-    # s = db_session.create_session()
-    # s.commit()
-
     app.run()
 
 
