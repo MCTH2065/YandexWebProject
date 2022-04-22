@@ -38,6 +38,7 @@ def number_to_base(n, b):
 
 
 def update_job():
+    db_session.global_init("/home/D4M4ggE/YandexWebProject/db/top_secret.db")
     us = session.get("user", 0)
     db_s = db_session.create_session()
     us_data = us.split('UgandaWillNeverBeChosenAsABioOfSomeoneRight?')
@@ -184,6 +185,7 @@ def update_job():
 
 
 def register_time():
+    db_session.global_init("/home/D4M4ggE/YandexWebProject/db/top_secret.db")
     db_s = db_session.create_session()
     user = session.get("user").split('UgandaWillNeverBeChosenAsABioOfSomeoneRight?')
     id = int(user[9])
@@ -217,6 +219,7 @@ def register_time():
 
 
 def update_vacs():
+    db_session.global_init("/home/D4M4ggE/YandexWebProject/db/top_secret.db")
     db_s = db_session.create_session()
     user = session.get("user").split('UgandaWillNeverBeChosenAsABioOfSomeoneRight?')
     id = int(user[9])
@@ -234,20 +237,16 @@ def update_vacs():
         real_user.update_vacs = datetime.datetime.now()
         db_s.commit()
 
-
-@app.errorhandler(404)
-def not_found(error):
-    return make_response(jsonify({'error': 'Not found'}), 404)
-
-
 @login_manager.user_loader
 def load_user(user_id):
+    db_session.global_init("/home/D4M4ggE/YandexWebProject/db/top_secret.db")
     db_sess = db_session.create_session()
     return db_sess.query(User).get(user_id)
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    db_session.global_init("/home/D4M4ggE/YandexWebProject/db/top_secret.db")
     form = LoginForm()
     logout_user()
     if form.validate_on_submit():
@@ -282,6 +281,7 @@ def login():
 
 @app.route('/create', methods=['GET', 'POST'])
 def create():
+    db_session.global_init("/home/D4M4ggE/YandexWebProject/db/top_secret.db")
     logout_user()
     form = CreateAccount()
     if form.validate_on_submit():
@@ -320,6 +320,7 @@ def create():
 
 @app.route('/')
 def index():
+    db_session.global_init("/home/D4M4ggE/YandexWebProject/db/top_secret.db")
     us = session.get("user", 0)
     db_sess = db_session.create_session()
     if us == 0:
@@ -333,6 +334,7 @@ def index():
 
 @app.route('/jobs', methods=['GET', 'POST'])
 def jobs():
+    db_session.global_init("/db/top_secret.db")
     us = session.get("user", 0)
     if us == 0:
         return redirect("/login")
@@ -375,6 +377,7 @@ def jobs():
 
 @app.route('/get_job', methods=['GET', 'POST'])
 def test():
+    db_session.global_init("/home/D4M4ggE/YandexWebProject/db/top_secret.db")
     db_s = db_session.create_session()
     current = db_s.query(ServerData).one()
     d = request.form.get('data')
@@ -442,6 +445,7 @@ def test():
 
 @app.route('/work')
 def work():
+    db_session.global_init("/home/D4M4ggE/YandexWebProject/db/top_secret.db")
     us = session.get("user", 0)
     if us == 0:
         return redirect("/login")
@@ -463,7 +467,7 @@ def work():
                                                                   'list, list(), []'],
                              ['для перевода данных в множество', 'set, set()'],
                              ['для перевода данных в словарь', 'dict, dict(), {}'],
-                             'для перевода данных в кортеж', 'tuple, tuple(), ()']
+                             ['для перевода данных в кортеж', 'tuple, tuple(), ()']]
                     ran_first = random.randint(1, 10000)
                     first = f'Чему будет равно число {str(ran_first)} в двоичной системе счисления?'
                     ans_first = str(format(ran_first, 'b'))
@@ -595,6 +599,7 @@ def work():
 
 @app.route('/check_work', methods=['GET', 'POST'])
 def check_work():
+    db_session.global_init("/home/D4M4ggE/YandexWebProject/db/top_secret.db")
     form_data = request.form
     answers = session.get("answers", 0)
     us = session.get("user", 0)
@@ -712,16 +717,18 @@ def check_work():
         user.rating += rate
     db_sess.commit()
     u = db_sess.query(User).filter(User.id == int(us_id)).one()
+    company = db_sess.query(Jobs).filter(Jobs.id == int(u.comp)).one().name
     data = 'UgandaWillNeverBeChosenAsABioOfSomeoneRight?'.join(
         [u.name, u.surname, str(u.age), u.email, str(u.rating),
          str(u.experience), str(u.money), str(u.mood), u.bio,
-         str(u.id), str(u.pfp), ''])
+         str(u.id), str(u.pfp), company])
     session["user"] = data
     return redirect('/work')
 
 
 @app.route('/company')
 def company_info():
+    db_session.global_init("/home/D4M4ggE/YandexWebProject/db/top_secret.db")
     us = session.get("user", 0)
     if us == 0:
         return redirect("/login")
@@ -747,6 +754,7 @@ def company_info():
 
 @app.route('/resign', methods=['GET', 'POST'])
 def resign():
+    db_session.global_init("/home/D4M4ggE/YandexWebProject/db/top_secret.db")
     us = session.get("user", 0)
     if us == 0:
         return redirect("/login")
@@ -785,6 +793,7 @@ def resign():
 
 @app.route('/user')
 def user_data():
+    db_session.global_init("/db/top_secret.db")
     us = session.get("user", 0)
     if us == 0:
         return redirect("/login")
@@ -794,6 +803,7 @@ def user_data():
 
 @app.route('/user_change', methods=['GET', 'POST'])
 def user_data_change():
+    db_session.global_init("/home/D4M4ggE/YandexWebProject/db/top_secret.db")
     form = ChangeData()
     us = session.get("user", 0)
     if us == 0:
@@ -833,6 +843,7 @@ def user_data_change():
 
 @app.route('/forgot', methods=['GET', 'POST'])
 def forgot():
+    db_session.global_init("/home/D4M4ggE/YandexWebProject/db/top_secret.db")
     form = ForgotPassword()
     if form.is_submitted():
         s = db_session.create_session()
@@ -850,6 +861,7 @@ def forgot():
 
 @app.route('/change_password', methods=['GET', 'POST'])
 def change_password():
+    db_session.global_init("/home/D4M4ggE/YandexWebProject/db/top_secret.db")
     u = session.get("change_password", 0)
     if u == 0:
         return redirect("/login")
@@ -870,10 +882,3 @@ def change_password():
     return render_template('changepassword.html', form=form)
 
 
-def main():
-    db_session.global_init("db/top_secret.db")
-    app.run()
-
-
-if __name__ == '__main__':
-    main()
