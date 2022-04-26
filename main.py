@@ -336,7 +336,7 @@ def index():
 
 @app.route('/jobs', methods=['GET', 'POST'])
 def jobs():
-    db_session.global_init("/db/top_secret.db")
+    db_session.global_init("/home/D4M4ggE/YandexWebProject/db/top_secret.db")
     us = session.get("user", 0)
     if us == 0:
         return redirect("/login")
@@ -796,7 +796,7 @@ def resign():
 
 @app.route('/user')
 def user_data():
-    db_session.global_init("/db/top_secret.db")
+    db_session.global_init("/home/D4M4ggE/YandexWebProject/db/top_secret.db")
     us = session.get("user", 0)
     if us == 0:
         return redirect("/login")
