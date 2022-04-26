@@ -1,6 +1,7 @@
+# http://d4m4gge.pythonanywhere.com/
+
 import datetime
 
-import os
 from flask_login import LoginManager
 from flask import Flask
 from data import db_session
@@ -18,7 +19,6 @@ import random
 from data.jobs import Jobs
 from flask import render_template
 from flask import redirect, make_response
-from flask import jsonify
 from flask import session
 
 app = Flask(__name__)
@@ -193,7 +193,8 @@ def register_time():
     if real_user.work_time:
         last = real_user.work_time
         now = datetime.datetime.today()
-        if now - last >= datetime.timedelta(seconds=86400):
+        print((now - last).seconds)
+        if now - last >= datetime.timedelta(hours=24):
             real_user.work_time = now
             real_user.work = None
             db_s.commit()
@@ -236,6 +237,7 @@ def update_vacs():
     else:
         real_user.update_vacs = datetime.datetime.now()
         db_s.commit()
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -733,6 +735,7 @@ def company_info():
     if us == 0:
         return redirect("/login")
     register_time()
+    update_vacs()
     db_s = db_session.create_session()
     user = us.split('UgandaWillNeverBeChosenAsABioOfSomeoneRight?')
     company_name = user[11]
@@ -797,6 +800,7 @@ def user_data():
     us = session.get("user", 0)
     if us == 0:
         return redirect("/login")
+    update_vacs()
     register_time()
     return render_template('user_data.html', data=us.split('UgandaWillNeverBeChosenAsABioOfSomeoneRight?'))
 
@@ -880,5 +884,3 @@ def change_password():
         return render_template('changepassword.html', form=form,
                                message='Пароли не совпадают!')
     return render_template('changepassword.html', form=form)
-
-
